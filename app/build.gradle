@@ -71,6 +71,7 @@ dependencies {
 
     //Debug
     compile 'com.jakewharton.timber:timber:4.5.1'
+    compile 'com.squareup.okhttp3:logging-interceptor:3.2.0'
 
     //Testing
     testCompile 'junit:junit:4.12'
