@@ -6,6 +6,7 @@ android {
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
     defaultConfig {
+        //TODO: Change Application Name
         applicationId "com.brianestrada.boilerplate"
         minSdkVersion 19
         targetSdkVersion 25
