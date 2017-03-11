@@ -9,12 +9,17 @@ import com.brianestrada.boilerplate.injection.modules.AppModule;
 import com.brianestrada.boilerplate.injection.modules.NetworkModule;
 import com.brianestrada.boilerplate.injection.modules.SharedPreferencesModule;
 
+import timber.log.Timber;
+
 public final class App extends Application {
     private AppComponent mAppComponent;
 
     @Override
     public void onCreate() {
         super.onCreate();
+
+
+        Timber.plant(new Timber.DebugTree());
 
 
         mAppComponent = DaggerAppComponent.builder()

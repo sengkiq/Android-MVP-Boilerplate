@@ -3,19 +3,24 @@ package com.brianestrada.boilerplate.ui;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-public abstract class BasePresenterImpl<V> implements BasePresenter<V> {
+import com.brianestrada.boilerplate.models.BaseState;
+
+import timber.log.Timber;
+
+public abstract class BasePresenterImpl<V, S extends BaseState> implements BasePresenter<V, S> {
 
     @Nullable
     protected V view;
 
     @Override
     public void onViewAttached(@NonNull V view) {
+        Timber.d("Attaching View");
         this.view = view;
     }
 
 
     @Override
-    public void onStart(boolean firstStart) {
+    public void onStart() {
 
     }
 

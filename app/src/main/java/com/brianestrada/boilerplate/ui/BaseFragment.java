@@ -1,20 +1,22 @@
 package com.brianestrada.boilerplate.ui;
 
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 
 import com.brianestrada.boilerplate.App;
 import com.brianestrada.boilerplate.injection.components.AppComponent;
+import com.brianestrada.boilerplate.models.BaseState;
 
-public abstract class BaseFragment<P extends BasePresenter<V>, V> extends Fragment {
-    static final String BUNDLE_KEY_FIRST_RUN = "BUNDLE_KEY_FIRST_RUN";
+public abstract class BaseFragment<P extends BasePresenter<V, S>, S extends BaseState, V> extends Fragment {
+    static final String BUNDLE_KEY_STATE = "BUNDLE_KEY_STATE";
 
     @Nullable
     protected P presenter;
 
-    private boolean firstRun;
+    protected S state;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -34,18 +36,14 @@ public abstract class BaseFragment<P extends BasePresenter<V>, V> extends Fragme
         doStart();
     }
 
-    /**
-     * Call the presenter callbacks for onStart
-     */
     @SuppressWarnings("unchecked")
     private void doStart() {
         assert presenter != null;
 
         presenter.onViewAttached((V) this);
 
-        presenter.onStart(firstRun);
+        presenter.onStart();
 
-        firstRun = false;
     }
 
     @Override
@@ -63,7 +61,7 @@ public abstract class BaseFragment<P extends BasePresenter<V>, V> extends Fragme
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putBoolean(BUNDLE_KEY_FIRST_RUN, firstRun);
+        outState.putParcelable(BUNDLE_KEY_STATE, (Parcelable) state);
 
     }
 
