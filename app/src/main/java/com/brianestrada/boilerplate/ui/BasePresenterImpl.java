@@ -3,7 +3,7 @@ package com.brianestrada.boilerplate.ui;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.brianestrada.boilerplate.models.BaseState;
+import com.brianestrada.boilerplate.models.states.BaseState;
 
 import timber.log.Timber;
 
@@ -18,9 +18,8 @@ public abstract class BasePresenterImpl<V, S extends BaseState> implements BaseP
         this.view = view;
     }
 
-
     @Override
-    public void onStart() {
+    public void onStart(boolean firstRun) {
 
     }
 

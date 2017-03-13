@@ -7,7 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.brianestrada.boilerplate.App;
 import com.brianestrada.boilerplate.injection.components.AppComponent;
-import com.brianestrada.boilerplate.models.BaseState;
+import com.brianestrada.boilerplate.models.states.BaseState;
 
 import javax.inject.Inject;
 
@@ -15,6 +15,7 @@ import timber.log.Timber;
 
 public abstract class BaseActivity<P extends BasePresenter<V, S>, S extends BaseState, V> extends AppCompatActivity {
     static final String BUNDLE_KEY_STATE = "BUNDLE_KEY_STATE";
+    static final String BUNDLE_KEY_FIRST_RUN = "BUNDLE_KEY_FIRST_RUN";
 
     @Inject
     @Nullable
@@ -22,13 +23,23 @@ public abstract class BaseActivity<P extends BasePresenter<V, S>, S extends Base
 
     protected S state;
 
+    protected boolean firstRun;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         injectDependencies();
 
+        firstRun = savedInstanceState == null;
+
         if (savedInstanceState != null) {
+
+            if (savedInstanceState.containsKey(BUNDLE_KEY_FIRST_RUN)) {
+
+                savedInstanceState.getBoolean(BUNDLE_KEY_FIRST_RUN);
+
+            }
 
             if (savedInstanceState.containsKey(BUNDLE_KEY_STATE)) {
 
@@ -63,7 +74,9 @@ public abstract class BaseActivity<P extends BasePresenter<V, S>, S extends Base
 
         presenter.onViewAttached((V) this);
 
-        presenter.onStart();
+        presenter.onStart(firstRun);
+
+        firstRun = false;
     }
 
     @Override
@@ -83,6 +96,7 @@ public abstract class BaseActivity<P extends BasePresenter<V, S>, S extends Base
 
         state = presenter.getState();
 
+        outState.putBoolean(BUNDLE_KEY_FIRST_RUN, firstRun);
         outState.putParcelable(BUNDLE_KEY_STATE, state);
 
     }
