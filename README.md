@@ -16,3 +16,20 @@ Libraries used:
 - Butterknife
 - Timber
 - Glide
+
+
+#Template Install and Usage
+---------------------------
+1. Find your install location for Android Studio (Might look something like this)  
+`C:\Program Files\Android\Android Studio\plugins\android\lib\templates\activities`
+2. Copy the folders from the templates folder into the activities folder
+3. Right Click on the root folder and navigate to
+New > Boilerplate MVP > Activity
+4. Enter a name (Use lower case) on the first row and click ok and you're done!
+
+
+#Todo
+-----
+- Create a Fragment Template
+- Possibly use loaders for presenters?
+
