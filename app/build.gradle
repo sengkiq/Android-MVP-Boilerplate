@@ -42,7 +42,7 @@ dependencies {
     compile "com.android.support:support-annotations:$SUPPORT_LIBRARY_VERSION"
     compile "com.android.support:design:$SUPPORT_LIBRARY_VERSION"
     compile "com.android.support:support-v4:$SUPPORT_LIBRARY_VERSION"
-
+    compile 'blue.aodev:material-values:1.1.1'
 
     //Dependency Injection
     compile "com.google.dagger:dagger:$DAGGER_VERSION"
@@ -72,6 +72,9 @@ dependencies {
     //Debug
     compile 'com.jakewharton.timber:timber:4.5.1'
     compile 'com.squareup.okhttp3:logging-interceptor:3.2.0'
+    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5'
+    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5'
+    testCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5'
 
     //Testing
     testCompile 'junit:junit:4.12'
