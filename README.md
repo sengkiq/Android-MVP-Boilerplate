@@ -1,8 +1,6 @@
 # Android-MVP-Boilerplate
 Create a boiler plate for starting up my projects without having to recreate the same project over and over thought I'd share it with you guys.
 
-Right now it's in it's first stages will be improving upon it as time goes hope you guys find it useful :)
-
 Libraries used:
 - Support Libraries
 - Design Libraries
@@ -17,6 +15,8 @@ Libraries used:
 - Timber
 - Glide
 
+Based on
+- [Android MVP Template](https://github.com/benoitletondor/Android-Studio-MVP-template)
 
 #Template Install and Usage
 ---------------------------
@@ -26,10 +26,4 @@ Libraries used:
 3. Right Click on the root folder and navigate to
 New > Boilerplate MVP > Activity
 4. Enter a name (Use lower case) on the first row and click ok and you're done!
-
-
-#Todo
------
-- Create a Fragment Template
-- Possibly use loaders for presenters?
 
