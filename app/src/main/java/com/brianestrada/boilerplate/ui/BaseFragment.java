@@ -4,47 +4,55 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 
 import com.brianestrada.boilerplate.App;
 import com.brianestrada.boilerplate.injection.components.AppComponent;
-import com.brianestrada.boilerplate.models.states.BaseState;
+import com.brianestrada.boilerplate.loader.PresenterFactory;
+import com.brianestrada.boilerplate.loader.PresenterLoader;
 
-public abstract class BaseFragment<P extends BasePresenter<V, S>, S extends BaseState, V> extends Fragment {
-    static final String BUNDLE_KEY_STATE = "BUNDLE_KEY_STATE";
-    static final String BUNDLE_KEY_FIRST_RUN = "BUNDLE_KEY_FIRST_RUN";
+import java.util.concurrent.atomic.AtomicBoolean;
 
+
+public abstract class BaseFragment<P extends BasePresenter<V>, V> extends Fragment implements LoaderManager.LoaderCallbacks<P> {
+    private final static String RECREATION_SAVED_STATE = "recreation_state";
+    private final static String LOADER_ID_SAVED_STATE = "loader_id_state";
+    /**
+     * Do we need to call {@link #doStart()} from the {@link #onLoadFinished(Loader, BasePresenter)} method.
+     * Will be true if presenter wasn't loaded when {@link #onStart()} is reached
+     */
+    private final AtomicBoolean mNeedToCallStart = new AtomicBoolean(false);
+    /**
+     * The presenter for this view
+     */
     @Nullable
-    protected P presenter;
-
-    protected S state;
-
-    protected boolean firstRun;
+    protected P mPresenter;
+    /**
+     * Is this the first start of the fragment (after onCreate)
+     */
+    private boolean mFirstStart;
+    /**
+     * Unique identifier for the loader, persisted across re-creation
+     */
+    private int mUniqueLoaderIdentifier;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        mFirstStart = savedInstanceState == null || savedInstanceState.getBoolean(RECREATION_SAVED_STATE);
+        mUniqueLoaderIdentifier = savedInstanceState == null ? BaseActivity.sViewCounter.incrementAndGet() : savedInstanceState.getInt(LOADER_ID_SAVED_STATE);
+
         injectDependencies();
+    }
 
-        firstRun = savedInstanceState == null;
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
-        if (savedInstanceState != null) {
-
-            if (savedInstanceState.containsKey(BUNDLE_KEY_FIRST_RUN)) {
-
-                savedInstanceState.getBoolean(BUNDLE_KEY_FIRST_RUN);
-
-            }
-
-            if (savedInstanceState.containsKey(BUNDLE_KEY_STATE)) {
-
-                state = savedInstanceState.getParcelable(BUNDLE_KEY_STATE);
-
-                presenter.setState(state);
-
-            }
-
-        }
+        // See http://stackoverflow.com/a/32289822/2508174 for the use of getActivity().getSupportLoaderManager()
+        getActivity().getSupportLoaderManager().initLoader(mUniqueLoaderIdentifier, null, this).startLoading();
     }
 
     private void injectDependencies() {
@@ -55,26 +63,33 @@ public abstract class BaseFragment<P extends BasePresenter<V, S>, S extends Base
     public void onStart() {
         super.onStart();
 
-        doStart();
+        if (mPresenter == null) {
+            mNeedToCallStart.set(true);
+        } else {
+            doStart();
+        }
     }
 
+    /**
+     * Call the presenter callbacks for onStart
+     */
     @SuppressWarnings("unchecked")
     private void doStart() {
-        assert presenter != null;
+        assert mPresenter != null;
 
-        presenter.onViewAttached((V) this);
+        mPresenter.onViewAttached((V) this);
 
-        presenter.onStart(firstRun);
+        mPresenter.onStart(mFirstStart);
 
-        firstRun = false;
+        mFirstStart = false;
     }
 
     @Override
     public void onStop() {
-        if (presenter != null) {
-            presenter.onStop();
+        if (mPresenter != null) {
+            mPresenter.onStop();
 
-            presenter.onViewDetached();
+            mPresenter.onViewDetached();
         }
 
         super.onStop();
@@ -84,11 +99,41 @@ public abstract class BaseFragment<P extends BasePresenter<V, S>, S extends Base
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putBoolean(BUNDLE_KEY_FIRST_RUN, firstRun);
-
-        outState.putParcelable(BUNDLE_KEY_STATE, state);
-
+        outState.putBoolean(RECREATION_SAVED_STATE, mFirstStart);
+        outState.putInt(LOADER_ID_SAVED_STATE, mUniqueLoaderIdentifier);
     }
 
+    @Override
+    public final Loader<P> onCreateLoader(int id, Bundle args) {
+        return new PresenterLoader<>(getActivity(), getPresenterFactory());
+    }
+
+    @Override
+    public final void onLoadFinished(Loader<P> loader, P presenter) {
+        mPresenter = presenter;
+
+        if (mNeedToCallStart.compareAndSet(true, false)) {
+            doStart();
+        }
+    }
+
+    @Override
+    public final void onLoaderReset(Loader<P> loader) {
+        mPresenter = null;
+    }
+
+    /**
+     * Get the presenter factory implementation for this view
+     *
+     * @return the presenter factory
+     */
+    @NonNull
+    protected abstract PresenterFactory<P> getPresenterFactory();
+
+    /**
+     * Setup the injection component for this view
+     *
+     * @param appComponent the app component
+     */
     protected abstract void setupComponent(@NonNull AppComponent appComponent);
 }
