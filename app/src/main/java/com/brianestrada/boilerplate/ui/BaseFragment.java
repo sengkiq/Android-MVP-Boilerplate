@@ -16,33 +16,33 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 
 public abstract class BaseFragment<P extends BasePresenter<V>, V> extends Fragment implements LoaderManager.LoaderCallbacks<P> {
-    private final static String RECREATION_SAVED_STATE = "recreation_state";
-    private final static String LOADER_ID_SAVED_STATE = "loader_id_state";
+    private final static String BUNDLE_KEY_FIRST_START = "BUNDLE_KEY_FIRST_START";
+    private final static String BUNDLE_KEY_LOADER = "BUNDLE_KEY_LOADER";
     /**
      * Do we need to call {@link #doStart()} from the {@link #onLoadFinished(Loader, BasePresenter)} method.
      * Will be true if presenter wasn't loaded when {@link #onStart()} is reached
      */
-    private final AtomicBoolean mNeedToCallStart = new AtomicBoolean(false);
+    private final AtomicBoolean needToCallStart = new AtomicBoolean(false);
     /**
      * The presenter for this view
      */
     @Nullable
-    protected P mPresenter;
+    protected P presenter;
     /**
      * Is this the first start of the fragment (after onCreate)
      */
-    private boolean mFirstStart;
+    private boolean firstStart;
     /**
      * Unique identifier for the loader, persisted across re-creation
      */
-    private int mUniqueLoaderIdentifier;
+    private int loaderID;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mFirstStart = savedInstanceState == null || savedInstanceState.getBoolean(RECREATION_SAVED_STATE);
-        mUniqueLoaderIdentifier = savedInstanceState == null ? BaseActivity.sViewCounter.incrementAndGet() : savedInstanceState.getInt(LOADER_ID_SAVED_STATE);
+        firstStart = savedInstanceState == null || savedInstanceState.getBoolean(BUNDLE_KEY_FIRST_START);
+        loaderID = savedInstanceState == null ? BaseActivity.sViewCounter.incrementAndGet() : savedInstanceState.getInt(BUNDLE_KEY_LOADER);
 
         injectDependencies();
     }
@@ -52,7 +52,7 @@ public abstract class BaseFragment<P extends BasePresenter<V>, V> extends Fragme
         super.onActivityCreated(savedInstanceState);
 
         // See http://stackoverflow.com/a/32289822/2508174 for the use of getActivity().getSupportLoaderManager()
-        getActivity().getSupportLoaderManager().initLoader(mUniqueLoaderIdentifier, null, this).startLoading();
+        getActivity().getSupportLoaderManager().initLoader(loaderID, null, this).startLoading();
     }
 
     private void injectDependencies() {
@@ -63,8 +63,8 @@ public abstract class BaseFragment<P extends BasePresenter<V>, V> extends Fragme
     public void onStart() {
         super.onStart();
 
-        if (mPresenter == null) {
-            mNeedToCallStart.set(true);
+        if (presenter == null) {
+            needToCallStart.set(true);
         } else {
             doStart();
         }
@@ -75,21 +75,21 @@ public abstract class BaseFragment<P extends BasePresenter<V>, V> extends Fragme
      */
     @SuppressWarnings("unchecked")
     private void doStart() {
-        assert mPresenter != null;
+        assert presenter != null;
 
-        mPresenter.onViewAttached((V) this);
+        presenter.onViewAttached((V) this);
 
-        mPresenter.onStart(mFirstStart);
+        presenter.onStart(firstStart);
 
-        mFirstStart = false;
+        firstStart = false;
     }
 
     @Override
     public void onStop() {
-        if (mPresenter != null) {
-            mPresenter.onStop();
+        if (presenter != null) {
+            presenter.onStop();
 
-            mPresenter.onViewDetached();
+            presenter.onViewDetached();
         }
 
         super.onStop();
@@ -99,8 +99,8 @@ public abstract class BaseFragment<P extends BasePresenter<V>, V> extends Fragme
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putBoolean(RECREATION_SAVED_STATE, mFirstStart);
-        outState.putInt(LOADER_ID_SAVED_STATE, mUniqueLoaderIdentifier);
+        outState.putBoolean(BUNDLE_KEY_FIRST_START, firstStart);
+        outState.putInt(BUNDLE_KEY_LOADER, loaderID);
     }
 
     @Override
@@ -110,16 +110,16 @@ public abstract class BaseFragment<P extends BasePresenter<V>, V> extends Fragme
 
     @Override
     public final void onLoadFinished(Loader<P> loader, P presenter) {
-        mPresenter = presenter;
+        this.presenter = presenter;
 
-        if (mNeedToCallStart.compareAndSet(true, false)) {
+        if (needToCallStart.compareAndSet(true, false)) {
             doStart();
         }
     }
 
     @Override
     public final void onLoaderReset(Loader<P> loader) {
-        mPresenter = null;
+        presenter = null;
     }
 
     /**
