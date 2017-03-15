@@ -5,7 +5,7 @@ import android.support.annotation.NonNull;
 
 import ${packageName}.R;
 import ${packageName}.injection.components.AppComponent;
-import ${packageName}.models.states.${stateClass};
+import ${packageName}.loader.PresenterFactory;
 import ${packageName}.ui.BaseActivity;
 import ${packageName}.ui.${mvpName}.injection.Dagger${componentClass};
 import ${packageName}.ui.${mvpName}.injection.${moduleClass};
@@ -13,10 +13,10 @@ import ${packageName}.ui.${mvpName}.injection.${moduleClass};
 import javax.inject.Inject;
 import butterknife.ButterKnife;
 
-public final class ${activityClass} extends BaseActivity<${presenterClass}, ${stateClass},${viewClass}> implements ${viewClass}
+public final class ${activityClass} extends BaseActivity<${presenterClass},${viewClass}> implements ${viewClass}
 {
     @Inject
-    ${presenterClass} presenter;
+    PresenterFactory<${presenterClass}> presenterFactory;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -34,5 +34,11 @@ public final class ${activityClass} extends BaseActivity<${presenterClass}, ${st
             .${moduleClass?uncap_first}(new ${moduleClass}())
             .build()
             .inject(this);
+    }
+
+    @NonNull
+    @Override
+    protected PresenterFactory<${presenterClass}> getPresenterFactory() {
+       return presenterFactory;
     }
 }

@@ -22,7 +22,4 @@
     <instantiate from="src/app_package/classes/Presenter.java.ftl"
       to="${escapeXmlAttribute(srcOut)}/ui/${mvpName}/${presenterClass}.java" />
 
-      <instantiate from="src/app_package/classes/State.java.ftl"
-        to="${escapeXmlAttribute(srcOut)}/models/states/${stateClass}.java" />
-
 </recipe>

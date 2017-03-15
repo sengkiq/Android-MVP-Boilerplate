@@ -15,7 +15,7 @@
         name="Name (use lowercase)"
         type="string"
         constraints="class|unique|nonempty"
-        default="Main"
+        default="main"
         help="The name of the class to create" />
 
     <parameter
@@ -75,16 +75,6 @@
         default="MainComponent"
         suggest="${underscoreToCamelCase(viewClass)}Component"
         help="The name of the Component to create" />
-
-
-    <parameter
-        id="stateClass"
-        name="State Name"
-        type="string"
-        constraints="class|nonempty|unique"
-        default="State"
-        suggest="${underscoreToCamelCase(activityClass)}State"
-        help="The name of the State to create" />
 
     <parameter
         id="moduleClass"
