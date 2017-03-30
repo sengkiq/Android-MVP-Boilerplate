@@ -30,7 +30,7 @@ android {
 
 dependencies {
     final BUTTER_KNIFE_VERSION = '8.5.1'
-    final SUPPORT_LIBRARY_VERSION = '25.2.0'
+    final SUPPORT_LIBRARY_VERSION = '25.3.1'
     final AUTO_VALUE_VERSION = '1.3'
     final DAGGER_VERSION = '2.10-rc4'
     final AUTO_VALUE_GSON_VERSION = '0.4.6'
@@ -42,6 +42,8 @@ dependencies {
     compile "com.android.support:support-annotations:$SUPPORT_LIBRARY_VERSION"
     compile "com.android.support:design:$SUPPORT_LIBRARY_VERSION"
     compile "com.android.support:support-v4:$SUPPORT_LIBRARY_VERSION"
+
+    //Style
     compile 'blue.aodev:material-values:1.1.1'
 
     //Dependency Injection
