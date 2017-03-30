@@ -20,10 +20,24 @@ Based on
 
 #Template Install and Usage
 ---------------------------
-1. Find your install location for Android Studio (Might look something like this)  
+
+## Install
+1. Go to the Templates Folder in the project
+2. Copy the contents of the folder
+3. Find your install location for Android Studio (Might look something like this)  
 `C:\Program Files\Android\Android Studio\plugins\android\lib\templates\activities`
-2. Copy the folders from the templates folder into the activities folder
-3. Right Click on the root folder and navigate to
-New > Boilerplate MVP > Activity
-4. Enter a name (Use lower case) on the first row and click ok and you're done!
+4. Copy the folders from the templates folder into the activities folder
+
+## Usage
+1. Right click the Root folder of your project (Important)
+
+<img src="https://raw.githubusercontent.com/BrianEstrada/Android-MVP-Boilerplate/master/screenshots/Screen1.png" width="350">
+
+2. Go to New > Boilerplate MVP and select which boilerplate you want to generate
+
+<img src="https://raw.githubusercontent.com/BrianEstrada/Android-MVP-Boilerplate/master/screenshots/Screen2.png" width="350">
+
+3. Finally all you really need to do is change the MVP name and the rest will set itself! Click finished when done.
+
+<img src="https://raw.githubusercontent.com/BrianEstrada/Android-MVP-Boilerplate/master/screenshots/Screen3.png" width="350">
 
